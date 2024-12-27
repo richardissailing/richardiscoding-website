@@ -1,5 +1,6 @@
 # Dependencies and built files
 node_modules/
+next/
 dist/
 build/
 .env
