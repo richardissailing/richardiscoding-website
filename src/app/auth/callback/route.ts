@@ -1,6 +1,14 @@
-import supabase from '@/lib/supabaseClient'
+import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase environment variables')
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -13,7 +21,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Exchange the code for a session
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (error) {
@@ -23,10 +30,7 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get the next path from the session data
     const next = data.session?.user?.user_metadata?.next || '/admin'
-
-    // Successful authentication, redirect to the intended page
     return NextResponse.redirect(`${origin}${next}`)
   } catch (error) {
     console.error('Error in auth callback:', error)
