@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { MotionDiv } from "@/components/motion"
 import Link from 'next/link'
-import { Code, Palette, Globe, ExternalLink, Loader2 } from 'lucide-react'
+import { Code, Server, ExternalLink, Loader2, BrainCircuit } from 'lucide-react'
 
 interface Service {
   id: number
@@ -29,9 +29,9 @@ interface Project {
 }
 
 const icons = {
-  'Development': Code,
-  'Design': Palette,
-  'Web': Globe,
+  'Cloud': Code,
+  'Python': BrainCircuit,
+  'Infrastructure': Server,
 } as const
 
 const getIconComponent = (title: string) => {

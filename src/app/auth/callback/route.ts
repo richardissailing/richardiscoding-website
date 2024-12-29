@@ -1,14 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables')
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -21,8 +13,9 @@ export async function GET(request: Request) {
   }
 
   try {
+    const supabase = createRouteHandlerClient({ cookies })
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-    
+
     if (error) {
       console.error('Error exchanging code for session:', error)
       return NextResponse.redirect(
@@ -30,8 +23,20 @@ export async function GET(request: Request) {
       )
     }
 
-    const next = data.session?.user?.user_metadata?.next || '/admin'
-    return NextResponse.redirect(`${origin}${next}`)
+    // Verify admin status after successful authentication
+    const { data: adminCheck } = await supabase
+      .from('allowed_admins')
+      .select('*')
+      .eq('email', data.session?.user?.email)
+      .single()
+
+    if (!adminCheck) {
+      return NextResponse.redirect(
+        `${origin}/admin/login?error=${encodeURIComponent('Not authorized as admin')}`
+      )
+    }
+
+    return NextResponse.redirect(`${origin}/admin`)
   } catch (error) {
     console.error('Error in auth callback:', error)
     return NextResponse.redirect(

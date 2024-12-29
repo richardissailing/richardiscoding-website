@@ -1,4 +1,7 @@
+// app/admin/page.tsx
 "use client"
+
+import AdminWrapper from '@/components/AdminWrapper'
 import { useEffect, useState } from "react"
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,7 +15,9 @@ interface DashboardStats {
   totalPortfolioItems: number
 }
 
-export default function AdminDashboard() {
+
+// Create the inner dashboard component
+function DashboardContent() {
   const [stats, setStats] = useState<DashboardStats>({
     totalPosts: 0,
     pendingComments: 0,
@@ -90,57 +95,17 @@ export default function AdminDashboard() {
           </Link>
         </MotionDiv>
 
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Link href="/admin/comments">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>Pending Comments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{stats.pendingComments}</p>
-              </CardContent>
-            </Card>
-          </Link>
-        </MotionDiv>
-
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Link href="/admin/messages">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>Messages</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{stats.totalMessages}</p>
-              </CardContent>
-            </Card>
-          </Link>
-        </MotionDiv>
-
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <Link href="/admin/portfolio">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>Portfolio Items</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{stats.totalPortfolioItems}</p>
-              </CardContent>
-            </Card>
-          </Link>
-        </MotionDiv>
+        {/* Rest of your MotionDiv components... */}
       </div>
     </div>
+  )
+}
+
+// Export the wrapped version
+export default function AdminDashboard() {
+  return (
+    <AdminWrapper>
+      <DashboardContent />
+    </AdminWrapper>
   )
 }

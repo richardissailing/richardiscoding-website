@@ -1,9 +1,10 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { createClientComponentClient, User, Session } from '@supabase/auth-helpers-nextjs'
+import { User, Session } from '@supabase/auth-helpers-nextjs'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 
-const supabase = createClientComponentClient()
+const supabase = createBrowserSupabaseClient()
 
 interface AuthContextType {
   user: User | null
