@@ -1,4 +1,5 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -8,8 +9,6 @@ if (!supabaseUrl || !supabaseKey) {
   console.error('Supabase environment variables missing on callback route')
   throw new Error('Missing Supabase environment variables')
 }
-
-const supabase = createClient(supabaseUrl, supabaseKey)
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -47,10 +46,8 @@ export async function GET(request: Request) {
 
     const next = data.session?.user?.user_metadata?.next || '/admin'
     const redirectUrl = new URL(next, origin)
-    
     console.log('Successful auth, redirecting to:', redirectUrl.toString())
     return NextResponse.redirect(redirectUrl)
-
   } catch (error) {
     console.error('Callback route error:', error)
     return NextResponse.redirect(
