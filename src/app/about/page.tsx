@@ -4,16 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { MotionDiv } from "@/components/motion"
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import Image from 'next/image'
-import type { Database } from '@/lib/supabase/database.types'
-
-type CareerRow = Database['public']['Tables']['careers']['Row']
-type SkillRow = Database['public']['Tables']['skills']['Row']
-type CertificationRow = Database['public']['Tables']['certifications']['Row']
+import { BookOpen, Award, Code2, Briefcase } from 'lucide-react'
 
 function AboutContent() {
-  const [careers, setCareers] = useState<CareerRow[]>([])
-  const [skills, setSkills] = useState<SkillRow[]>([])
-  const [certifications, setCertifications] = useState<CertificationRow[]>([])
+  const [careers, setCareers] = useState<any[]>([])
+  const [skills, setSkills] = useState<any[]>([])
+  const [certifications, setCertifications] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const supabase = createBrowserSupabaseClient()
 
@@ -30,9 +26,9 @@ function AboutContent() {
         if (skillsResult.error) throw skillsResult.error
         if (certificationsResult.error) throw certificationsResult.error
 
-        setCareers(careersResult.data as CareerRow[] || [])
-        setSkills(skillsResult.data as SkillRow[] || [])
-        setCertifications(certificationsResult.data as CertificationRow[] || [])
+        setCareers(careersResult.data || [])
+        setSkills(skillsResult.data || [])
+        setCertifications(certificationsResult.data || [])
       } catch (error) {
         console.error('Error loading content:', error)
       } finally {
@@ -44,38 +40,50 @@ function AboutContent() {
   }, [])
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-[400px]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      </div>
+    )
   }
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/50">
+      <div className="container mx-auto px-4 py-20">
         <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-20"
         >
-          <h1 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-secondary">
+          <h1 className="text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-secondary">
             About Me
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Hi, I&apos;m Richard Kirkham. I&apos;m a passionate software engineer with expertise in building modern web applications. 
-            I love creating elegant solutions to complex problems and continuously learning new technologies.
-          </p>
+          <div className="max-w-3xl mx-auto">
+            <p className="text-xl leading-relaxed text-muted-foreground">
+              Hi, I'm Richard Kirkham. I'm a passionate software engineer with expertise in building modern web applications. 
+              I love creating elegant solutions to complex problems and continuously learning new technologies.
+            </p>
+            <p className="text-xl leading-relaxed text-muted-foreground mt-4">
+              I specialize in Python development, cloud architecture, and building efficient CI/CD pipelines. 
+              With expertise in both traditional infrastructure and modern cloud-native solutions, 
+              I focus on creating robust, scalable systems that drive operational excellence.
+            </p>
+          </div>
         </MotionDiv>
 
-        <div className="grid gap-8 md:grid-cols-2 mb-8">
+        <div className="grid gap-8 lg:grid-cols-2 mb-16">
           <MotionDiv
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.6 }}
           >
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="text-2xl">Experience</CardTitle>
+            <Card className="h-full backdrop-blur-sm bg-card/50">
+              <CardHeader className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-6 w-6 text-primary" />
+                  <CardTitle className="text-2xl">Experience</CardTitle>
+                </div>
                 <CardDescription>My professional journey</CardDescription>
               </CardHeader>
               <CardContent>
@@ -85,10 +93,11 @@ function AboutContent() {
                       key={career.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                      transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                     >
-                      <div className="border-l-2 border-primary pl-4 py-2">
-                        <h3 className="font-semibold text-lg">{career.title}</h3>
+                      <div className="relative pl-6 pb-6 border-l-2 border-primary/30 last:pb-0">
+                        <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary" />
+                        <h3 className="font-semibold text-lg text-primary">{career.title}</h3>
                         <p className="text-sm text-muted-foreground mb-2">
                           {career.company} • {career.period}
                         </p>
@@ -101,81 +110,88 @@ function AboutContent() {
             </Card>
           </MotionDiv>
 
-          <MotionDiv
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="text-2xl">Skills</CardTitle>
-                <CardDescription>Technologies and tools I work with</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill, index) => (
-                    <MotionDiv
-                      key={skill.id}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
-                    >
-                      <span className="px-3 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
-                        {skill.name}
-                      </span>
-                    </MotionDiv>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </MotionDiv>
-        </div>
+          <div className="space-y-8">
+            <MotionDiv
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Card className="backdrop-blur-sm bg-card/50">
+                <CardHeader className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Code2 className="h-6 w-6 text-primary" />
+                    <CardTitle className="text-2xl">Skills</CardTitle>
+                  </div>
+                  <CardDescription>Technologies and tools I work with</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-3">
+                    {skills.map((skill, index) => (
+                      <MotionDiv
+                        key={skill.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
+                      >
+                        <span className="px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-default">
+                          {skill.name}
+                        </span>
+                      </MotionDiv>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </MotionDiv>
 
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Certifications</CardTitle>
-              <CardDescription>Professional certifications and achievements</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 md:grid-cols-2">
-                {certifications.map((cert, index) => (
-                  <MotionDiv
-                    key={cert.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                    className="relative"
-                  >
-                    <div className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
-                      <div className="relative h-40 mb-4">
-                        <Image
-                          src={cert.image_url}
-                          alt={cert.name}
-                          fill
-                          className="object-contain rounded-md"
-                        />
-                      </div>
-                      <h3 className="font-semibold text-lg">{cert.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {cert.issuer} • Issued {new Date(cert.issued_date).toLocaleDateString()}
-                      </p>
-                      {cert.expiry_date && (
-                        <p className="text-sm text-muted-foreground">
-                          Expires: {new Date(cert.expiry_date).toLocaleDateString()}
-                        </p>
-                      )}
-                    </div>
-                  </MotionDiv>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </MotionDiv>
+            <MotionDiv
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <Card className="backdrop-blur-sm bg-card/50">
+                <CardHeader className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Award className="h-6 w-6 text-primary" />
+                    <CardTitle className="text-2xl">Certifications</CardTitle>
+                  </div>
+                  <CardDescription>Professional certifications and achievements</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    {certifications.map((cert, index) => (
+                      <MotionDiv
+                        key={cert.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+                      >
+                        <div className="group relative rounded-lg p-4 hover:bg-primary/5 transition-colors">
+                          <div className="relative h-32 mb-4">
+                            <Image
+                              src={cert.image_url}
+                              alt={cert.name}
+                              fill
+                              className="object-contain rounded-md group-hover:scale-105 transition-transform"
+                            />
+                          </div>
+                          <h3 className="font-semibold text-lg text-primary">{cert.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {cert.issuer} • Issued {new Date(cert.issued_date).toLocaleDateString()}
+                          </p>
+                          {cert.expiry_date && (
+                            <p className="text-sm text-muted-foreground">
+                              Expires: {new Date(cert.expiry_date).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                      </MotionDiv>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </MotionDiv>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -183,7 +199,11 @@ function AboutContent() {
 
 export default function AboutPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      </div>
+    }>
       <AboutContent />
     </Suspense>
   )

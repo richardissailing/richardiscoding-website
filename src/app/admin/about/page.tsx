@@ -15,6 +15,10 @@ interface Career {
   orders: number
 }
 
+interface NewCareer extends Omit<Career, 'id'> {
+  id?: number
+}
+
 interface Skill {
   id: number
   name: string
@@ -22,7 +26,7 @@ interface Skill {
 }
 
 export default function AboutAdmin() {
-  const [careers, setCareers] = useState<Career[]>([])
+  const [careers, setCareers] = useState<(Career | NewCareer)[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
   const [newSkill, setNewSkill] = useState("")
   const [loading, setLoading] = useState(true)
@@ -35,26 +39,22 @@ export default function AboutAdmin() {
 
   async function loadContent() {
     try {
-      // Load careers with type assertion
-      const { data: careersData, error: careersError } = await supabase
-        .from('careers')
-        .select('*')
-        .order('orders')
-        .returns<Career[]>()
+      const [careersResult, skillsResult] = await Promise.all([
+        supabase
+          .from('careers')
+          .select('*')
+          .order('orders'),
+        supabase
+          .from('skills')
+          .select('*')
+          .order('name')
+      ])
 
-      if (careersError) throw careersError
+      if (careersResult.error) throw careersResult.error
+      if (skillsResult.error) throw skillsResult.error
 
-      // Load skills with type assertion
-      const { data: skillsData, error: skillsError } = await supabase
-        .from('skills')
-        .select('*')
-        .order('name')
-        .returns<Skill[]>()
-
-      if (skillsError) throw skillsError
-
-      setCareers(careersData || [])
-      setSkills(skillsData || [])
+      setCareers(careersResult.data || [])
+      setSkills(skillsResult.data || [])
     } catch (error) {
       console.error('Error loading content:', error)
     } finally {
@@ -62,12 +62,10 @@ export default function AboutAdmin() {
     }
   }
 
-  async function handleCareerUpdate(career: Career) {
+  async function handleCareerUpdate(career: Career | NewCareer) {
     setSaving(true)
     try {
-      // Convert Career object to a plain object that matches Supabase's expected type
-      const careerData: Record<string, unknown> = {
-        id: career.id,
+      const careerData: Partial<Career> = {
         title: career.title,
         company: career.company,
         period: career.period,
@@ -75,11 +73,15 @@ export default function AboutAdmin() {
         orders: career.orders
       }
       
+      // Only include id if it's a valid database ID
+      if (Number.isInteger(career.id)) {
+        careerData.id = career.id
+      }
+      
       const { error } = await supabase
         .from('careers')
         .upsert(careerData)
         .select()
-        .returns<Career>()
       
       if (error) throw error
       await loadContent()
@@ -115,8 +117,7 @@ export default function AboutAdmin() {
         .from('skills')
         .insert({ name: newSkill.trim() })
         .select()
-        .returns<Skill>()
-
+      
       if (error) throw error
       setNewSkill("")
       await loadContent()
@@ -126,6 +127,8 @@ export default function AboutAdmin() {
   }
 
   async function handleSkillDelete(id: number) {
+    if (!confirm('Are you sure you want to delete this skill?')) return
+
     try {
       const { error } = await supabase
         .from('skills')
@@ -140,8 +143,7 @@ export default function AboutAdmin() {
   }
 
   function handleAddNewCareer() {
-    const newCareer: Career = {
-      id: Math.random(), // Temporary ID for new items
+    const newCareer: NewCareer = {
       title: '',
       company: '',
       period: '',
@@ -151,10 +153,25 @@ export default function AboutAdmin() {
     setCareers([...careers, newCareer])
   }
 
-  if (loading) return <div>Loading...</div>
+  function handleCareerFieldUpdate(index: number, field: keyof Career, value: string) {
+    const updated = [...careers]
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    }
+    setCareers(updated)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Manage About Page</h1>
         <Button onClick={handleAddNewCareer}>Add New Career Item</Button>
@@ -185,6 +202,7 @@ export default function AboutAdmin() {
                 <button
                   onClick={() => handleSkillDelete(skill.id)}
                   className="text-red-500 hover:text-red-700"
+                  aria-label={`Delete ${skill.name}`}
                 >
                   ×
                 </button>
@@ -205,48 +223,32 @@ export default function AboutAdmin() {
               <Input
                 placeholder="Job Title"
                 value={career.title}
-                onChange={(e) => {
-                  const updated = [...careers]
-                  updated[index].title = e.target.value
-                  setCareers(updated)
-                }}
+                onChange={(e) => handleCareerFieldUpdate(index, 'title', e.target.value)}
               />
               
               <Input
                 placeholder="Company"
                 value={career.company}
-                onChange={(e) => {
-                  const updated = [...careers]
-                  updated[index].company = e.target.value
-                  setCareers(updated)
-                }}
+                onChange={(e) => handleCareerFieldUpdate(index, 'company', e.target.value)}
               />
               
               <Input
                 placeholder="Period (e.g., 2020-2023)"
                 value={career.period}
-                onChange={(e) => {
-                  const updated = [...careers]
-                  updated[index].period = e.target.value
-                  setCareers(updated)
-                }}
+                onChange={(e) => handleCareerFieldUpdate(index, 'period', e.target.value)}
               />
               
               <Textarea
                 placeholder="Description"
                 value={career.description}
-                onChange={(e) => {
-                  const updated = [...careers]
-                  updated[index].description = e.target.value
-                  setCareers(updated)
-                }}
+                onChange={(e) => handleCareerFieldUpdate(index, 'description', e.target.value)}
               />
 
               <div className="flex justify-end gap-2">
                 {career.id && (
                   <Button
                     variant="destructive"
-                    onClick={() => handleCareerDelete(career.id)}
+                    onClick={() => handleCareerDelete(career.id as number)}
                   >
                     Delete
                   </Button>
@@ -255,7 +257,7 @@ export default function AboutAdmin() {
                   onClick={() => handleCareerUpdate(career)}
                   disabled={saving}
                 >
-                  Save Changes
+                  {saving ? 'Saving...' : 'Save Changes'}
                 </Button>
               </div>
             </CardContent>

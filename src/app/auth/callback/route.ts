@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -28,8 +28,9 @@ export async function GET(request: Request) {
   }
 
   try {
+    const supabase = createRouteHandlerClient({ cookies })
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-    
+
     if (error) {
       console.error('Session exchange error:', error)
       return NextResponse.redirect(

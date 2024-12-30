@@ -88,7 +88,7 @@ function PortfolioContent() {
                   )}
                   <CardHeader>
                     <CardTitle>{project.title}</CardTitle>
-                    <CardDescription className="line-clamp-3">{project.description}</CardDescription>
+                    <CardDescription>{project.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2 mb-4">
