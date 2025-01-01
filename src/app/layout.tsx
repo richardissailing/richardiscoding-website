@@ -4,6 +4,22 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 import { Navigation } from "@/components/navigation"
+import { Metadata } from 'next'
+
+
+export const metadata: Metadata = {
+  title: 'Richard is coding',
+  description: 'Richard is coding',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/apple-icon.png',
+    },
+  },
+}
 
 export default function RootLayout({
   children,

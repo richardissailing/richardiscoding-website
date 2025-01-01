@@ -49,22 +49,22 @@ function AboutContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/50">
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-8 md:py-20">
         <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          className="text-center mb-12 md:mb-20"
         >
-          <h1 className="text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-secondary">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 md:mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-secondary">
             About Me
           </h1>
-          <div className="max-w-3xl mx-auto">
-            <p className="text-xl leading-relaxed text-muted-foreground">
+          <div className="max-w-3xl mx-auto px-4">
+            <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">
               Hi, I'm Richard Kirkham. I'm a passionate software engineer with expertise in building modern web applications. 
               I love creating elegant solutions to complex problems and continuously learning new technologies.
             </p>
-            <p className="text-xl leading-relaxed text-muted-foreground mt-4">
+            <p className="text-lg md:text-xl leading-relaxed text-muted-foreground mt-4">
               I specialize in Python development, cloud architecture, and building efficient CI/CD pipelines. 
               With expertise in both traditional infrastructure and modern cloud-native solutions, 
               I focus on creating robust, scalable systems that drive operational excellence.
@@ -72,11 +72,94 @@ function AboutContent() {
           </div>
         </MotionDiv>
 
-        <div className="grid gap-8 lg:grid-cols-2 mb-16">
+        <div className="flex flex-col gap-8">
+          <MotionDiv
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="w-full"
+          >
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Code2 className="h-6 w-6 text-primary" />
+                  <CardTitle className="text-2xl">Skills</CardTitle>
+                </div>
+                <CardDescription>Technologies and tools I work with</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-3">
+                  {skills.map((skill, index) => (
+                    <MotionDiv
+                      key={skill.id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
+                    >
+                      <span className="px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-default">
+                        {skill.name}
+                      </span>
+                    </MotionDiv>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </MotionDiv>
+
+          <MotionDiv
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="w-full"
+          >
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Award className="h-6 w-6 text-primary" />
+                  <CardTitle className="text-2xl">Certifications</CardTitle>
+                </div>
+                <CardDescription>Professional certifications and achievements</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {certifications.map((cert, index) => (
+                    <MotionDiv
+                      key={cert.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+                    >
+                      <div className="group relative rounded-lg p-4 hover:bg-primary/5 transition-colors">
+                        <div className="relative h-32 mb-4">
+                          <Image
+                            src={cert.image_url}
+                            alt={cert.name}
+                            fill
+                            className="object-contain rounded-md group-hover:scale-105 transition-transform"
+                          />
+                        </div>
+                        <h3 className="font-semibold text-lg text-primary">{cert.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {cert.issuer} • Issued {new Date(cert.issued_date).toLocaleDateString()}
+                        </p>
+                        {cert.expiry_date && (
+                          <p className="text-sm text-muted-foreground">
+                            Expires: {new Date(cert.expiry_date).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </MotionDiv>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </MotionDiv>
+
           <MotionDiv
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
+            className="w-full"
           >
             <Card className="h-full backdrop-blur-sm bg-card/50">
               <CardHeader className="space-y-1">
@@ -109,88 +192,6 @@ function AboutContent() {
               </CardContent>
             </Card>
           </MotionDiv>
-
-          <div className="space-y-8">
-            <MotionDiv
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Card className="backdrop-blur-sm bg-card/50">
-                <CardHeader className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Code2 className="h-6 w-6 text-primary" />
-                    <CardTitle className="text-2xl">Skills</CardTitle>
-                  </div>
-                  <CardDescription>Technologies and tools I work with</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-3">
-                    {skills.map((skill, index) => (
-                      <MotionDiv
-                        key={skill.id}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
-                      >
-                        <span className="px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-default">
-                          {skill.name}
-                        </span>
-                      </MotionDiv>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </MotionDiv>
-
-            <MotionDiv
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className="backdrop-blur-sm bg-card/50">
-                <CardHeader className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Award className="h-6 w-6 text-primary" />
-                    <CardTitle className="text-2xl">Certifications</CardTitle>
-                  </div>
-                  <CardDescription>Professional certifications and achievements</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    {certifications.map((cert, index) => (
-                      <MotionDiv
-                        key={cert.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                      >
-                        <div className="group relative rounded-lg p-4 hover:bg-primary/5 transition-colors">
-                          <div className="relative h-32 mb-4">
-                            <Image
-                              src={cert.image_url}
-                              alt={cert.name}
-                              fill
-                              className="object-contain rounded-md group-hover:scale-105 transition-transform"
-                            />
-                          </div>
-                          <h3 className="font-semibold text-lg text-primary">{cert.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {cert.issuer} • Issued {new Date(cert.issued_date).toLocaleDateString()}
-                          </p>
-                          {cert.expiry_date && (
-                            <p className="text-sm text-muted-foreground">
-                              Expires: {new Date(cert.expiry_date).toLocaleDateString()}
-                            </p>
-                          )}
-                        </div>
-                      </MotionDiv>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </MotionDiv>
-          </div>
         </div>
       </div>
     </div>
