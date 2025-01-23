@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useState } from 'react'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Hero } from "@/components/hero"
 import { ScrollAnimation } from "@/components/scroll-animation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -125,6 +126,7 @@ function HomeContent() {
 
   return (
     <div className="space-y-32">
+      <SpeedInsights />
       <Hero />
       
       <section className="px-4">
