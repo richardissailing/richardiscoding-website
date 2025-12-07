@@ -2,16 +2,23 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const res = NextResponse.next()
+
+  // Add security headers
+  res.headers.set('X-Frame-Options', 'DENY')
+  res.headers.set('X-Content-Type-Options', 'nosniff')
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.headers.set('X-XSS-Protection', '1; mode=block')
+
   const supabase = createMiddlewareClient({ req, res })
-  
+
   try {
     const {
       data: { session },
     } = await supabase.auth.getSession()
 
-    console.log('Middleware session check:', {
+    console.log('Proxy session check:', {
       path: req.nextUrl.pathname,
       hasSession: !!session,
       userEmail: session?.user?.email
@@ -33,7 +40,7 @@ export async function middleware(req: NextRequest) {
 
     return res
   } catch (error) {
-    console.error('Middleware error:', error)
+    console.error('Proxy error:', error)
     return res
   }
 }

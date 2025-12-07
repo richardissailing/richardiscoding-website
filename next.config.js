@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Turbopack is now the default in Next.js 16
+  turbopack: {},
   webpack: (config, { isServer }) => {
     // Ignore punycode warning
     config.ignoreWarnings = [
