@@ -46,7 +46,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^9.17.0",
     "eslint-config-next": "16.0.7",
-    "glob": "^10.3.10",
+    "glob": "^10.5.0",
     "lru-cache": "^10.1.0",
     "postcss": "^8",
     "rimraf": "^6.0.1",
