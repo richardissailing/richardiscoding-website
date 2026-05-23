@@ -8,4 +8,4 @@ build/
 .DS_Store
 node_modules
 .vercel
-.next
+.next/
