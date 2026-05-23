@@ -17,7 +17,7 @@ export interface Database {
           period: string
           description: string
           orders: number
-          achievements: Text
+          achievements?: string
           created_at?: string
           updated_at?: string
         }

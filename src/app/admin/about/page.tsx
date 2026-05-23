@@ -65,17 +65,20 @@ export default function AboutAdmin() {
   async function handleCareerUpdate(career: Career | NewCareer) {
     setSaving(true)
     try {
-      const careerData: Partial<Career> = {
+      const careerData: {
+        id?: number
+        title: string
+        company: string
+        period: string
+        description: string
+        orders: number
+      } = {
         title: career.title,
         company: career.company,
         period: career.period,
         description: career.description,
-        orders: career.orders
-      }
-      
-      // Only include id if it's a valid database ID
-      if (Number.isInteger(career.id)) {
-        careerData.id = career.id
+        orders: career.orders,
+        ...(Number.isInteger(career.id) ? { id: career.id as number } : {})
       }
       
       const { error } = await supabase
