@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       careers: {
@@ -17,7 +17,7 @@ export interface Database {
           period: string
           description: string
           orders: number
-          achievements: Text
+          achievements?: string
           created_at?: string
           updated_at?: string
         }
@@ -28,6 +28,7 @@ export interface Database {
           period: string
           description: string
           orders: number
+          achievements?: string
           created_at?: string
           updated_at?: string
         }
@@ -38,9 +39,11 @@ export interface Database {
           period?: string
           description?: string
           orders?: number
+          achievements?: string
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       skills: {
         Row: {
@@ -64,6 +67,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       certifications: {
         Row: {
@@ -96,6 +100,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
     }
     Views: {
@@ -105,6 +110,9 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
       [_ in never]: never
     }
   }
